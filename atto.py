@@ -37,14 +37,22 @@ class Value:
     out = Value(self.data ** other, (self,), f'**{other}')
 
     def _backward():
-      self.gradient += (other * (self ** (other-1))) * out.grad
+      self.gradient += (other * (self.data ** (other-1))) * out.gradient
 
     out._backward = _backward
+    
 
     return out
 
   def relu(self):
     out = Value(0 if self.data < 0 else self.data, (self,), f'ReLU')
+    
+    def _backward():
+        self.gradient += (out.data > 0) * out.gradient
+
+    out._backward = _backward
+
+    return out
 
   def backward(self):
 
