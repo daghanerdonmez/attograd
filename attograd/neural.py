@@ -13,13 +13,14 @@ class Module:
 class Neuron(Module):
 
     def __init__(self, n_input, linear=False):
-        self.w = [Value(random.uniform(-1,1)) for i in range(n_input)]
-        self.b = Value(0)
+        self.w = [Value(random.uniform(-1,1)) for _ in range(n_input)]
+        self.b = Value(random.uniform(-1,1))
         self.linear = linear
 
     def __call__(self, x):
-        preactivation = sum([wi * xi for (wi, xi) in zip(self.w, x)], self.b)
-        activation = preactivation if self.linear else preactivation.relu()
+        preactivation = sum((wi * xi for (wi, xi) in zip(self.w, x)), self.b)
+        # activation = preactivation if self.linear else preactivation.tanh()
+        activation = preactivation.tanh()
 
         return activation
     
@@ -42,7 +43,7 @@ class MultiLayerPerceptron(Module):
     
     def __init__(self, n_input, n_outputs):
         sizes = [n_input] + n_outputs
-        self.layers = [Layer(sizes[i], sizes[i+1], linear=i==len(sizes)-1) for i in range(len(n_outputs))]
+        self.layers = [Layer(sizes[i], sizes[i+1], linear=i==len(n_outputs)-1) for i in range(len(n_outputs))]
 
     def __call__(self, x):
         for layer in self.layers:

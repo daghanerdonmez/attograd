@@ -1,11 +1,13 @@
+import math
+
 class Value:
   def __init__(self, data, _children=(), _operation=''):
     self.data = data
-    self.gradient = 0
+    self.gradient = 0.0
 
     self._backward = lambda: None
 
-    self._children = _children
+    self._children = set(_children)
     self._operation = _operation
 
   def __add__(self, other):
@@ -52,6 +54,17 @@ class Value:
 
     out._backward = _backward
 
+    return out
+  
+  def tanh(self):
+    x = self.data
+    t = (math.exp(2*x) - 1)/(math.exp(2*x) + 1)
+    out = Value(t, (self, ), 'tanh')
+    
+    def _backward():
+      self.gradient += (1 - t**2) * out.gradient
+    out._backward = _backward
+    
     return out
 
   def backward(self):
